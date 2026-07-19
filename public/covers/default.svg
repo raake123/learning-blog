@@ -1,0 +1,21 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="baseD" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#243b3a"/>
+      <stop offset="0.5" stop-color="#2f5d54"/>
+      <stop offset="1" stop-color="#5aa896"/>
+    </linearGradient>
+    <filter id="softD"><feGaussianBlur stdDeviation="75"/></filter>
+    <filter id="grainD">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#baseD)"/>
+  <g filter="url(#softD)" opacity="0.75">
+    <circle cx="480" cy="300" r="260" fill="#7fd0b8"/>
+    <circle cx="1180" cy="360" r="280" fill="#356b5f"/>
+    <circle cx="900" cy="740" r="240" fill="#4a8f80"/>
+  </g>
+  <rect width="1600" height="900" filter="url(#grainD)" opacity="0.05"/>
+</svg>

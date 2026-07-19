@@ -1,66 +1,98 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+// ---------------------------------------------------------------------------
+// app/page.js  →  the homepage, shown at "/"
+//
+// Layout: the newest post is shown large as a "featured" hero, and the rest
+// appear below as a clean list with small thumbnails — the Medium look.
+// ---------------------------------------------------------------------------
 
-export default function Home() {
+import Link from "next/link";
+import Image from "next/image"; // Next.js's smart image component (auto-optimized)
+import { getAllPosts } from "@/lib/posts";
+import Byline from "./components/Byline";
+
+// Always fetch the latest posts from the database (so new posts show up
+// immediately, instead of a cached snapshot).
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const posts = await getAllPosts();
+
+  // If there are no posts yet (empty database), show a friendly message.
+  if (posts.length === 0) {
+    return (
+      <div className="container">
+        <header className="masthead">
+          <h1>The Learning Blog</h1>
+          <p>No posts yet — check back soon.</p>
+        </header>
+      </div>
+    );
+  }
+
+  // Split the list: the first (newest) post is featured, the rest go in the list.
+  const [featured, ...rest] = posts;
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="container">
+      {/* Masthead */}
+      <header className="masthead">
+        <h1>The Learning Blog</h1>
+        <p>Notes from someone figuring out how to build things on the web.</p>
+      </header>
+
+      {/* Featured hero post */}
+      <Link href={`/posts/${featured.slug}`} className="feature">
+        <div className="feature-image">
+          <Image
+            src={featured.cover}
+            alt=""
+            fill
+            sizes="(max-width: 760px) 100vw, 680px"
+            priority
+          />
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="feature-body">
+          <span className="tag">{featured.category}</span>
+          <h2 className="feature-title">{featured.title}</h2>
+          <p className="feature-excerpt">{featured.excerpt}</p>
+          <Byline
+            author={featured.author}
+            date={featured.date}
+            content={featured.content}
+          />
         </div>
-      </main>
+      </Link>
+
+      {/* The rest of the posts as list rows */}
+      <section className="stories">
+        <h3 className="stories-heading">More stories</h3>
+        {rest.map((post) => (
+          <Link
+            href={`/posts/${post.slug}`}
+            className="story"
+            key={post.slug}
+          >
+            <div className="story-body">
+              <span className="tag">{post.category}</span>
+              <h2 className="story-title">{post.title}</h2>
+              <p className="story-excerpt">{post.excerpt}</p>
+              <Byline
+                author={post.author}
+                date={post.date}
+                content={post.content}
+              />
+            </div>
+            <div className="story-thumb">
+              <Image
+                src={post.cover}
+                alt=""
+                fill
+                sizes="160px"
+              />
+            </div>
+          </Link>
+        ))}
+      </section>
     </div>
   );
 }
