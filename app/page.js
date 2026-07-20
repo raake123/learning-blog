@@ -36,6 +36,7 @@ export default async function HomePage() {
     <div className="container">
       {/* Masthead */}
       <header className="masthead">
+        <span className="masthead-kicker">Essays · Notes · Tutorials</span>
         <h1>The Learning Blog</h1>
         <p>Notes from someone figuring out how to build things on the web.</p>
       </header>

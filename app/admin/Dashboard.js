@@ -9,24 +9,25 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { getAllPosts, deletePost, formatDate } from "@/lib/posts";
+import { getMyPosts, deletePost, formatDate } from "@/lib/posts";
 
 export default function Dashboard() {
   const [posts, setPosts] = useState([]);
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Load the posts (and who's signed in) when the dashboard opens.
+  // Load THIS user's posts (and who's signed in) when the dashboard opens.
   async function load() {
     setLoading(true);
-    const data = await getAllPosts();
-    setPosts(data);
+    const { data } = await supabase.auth.getUser();
+    setName(data.user?.user_metadata?.name || data.user?.email || "");
+    const mine = data.user ? await getMyPosts(data.user.id) : [];
+    setPosts(mine);
     setLoading(false);
   }
 
   useEffect(() => {
     load();
-    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email || ""));
   }, []);
 
   async function handleDelete(slug, title) {
@@ -41,7 +42,7 @@ export default function Dashboard() {
       <div className="admin-head">
         <div>
           <h1 className="admin-title">Your posts</h1>
-          <p className="admin-sub">Signed in as {email}</p>
+          <p className="admin-sub">Signed in as {name}</p>
         </div>
         <div className="admin-actions">
           <Link href="/admin/new" className="btn-primary">
@@ -55,6 +56,10 @@ export default function Dashboard() {
 
       {loading ? (
         <p className="admin-sub">Loading…</p>
+      ) : posts.length === 0 ? (
+        <p className="admin-sub">
+          You haven&apos;t written anything yet. Hit “New post” to publish your first one.
+        </p>
       ) : (
         <ul className="admin-list">
           {posts.map((post) => (

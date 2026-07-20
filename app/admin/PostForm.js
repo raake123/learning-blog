@@ -63,6 +63,8 @@ export default function PostForm({ mode, initial }) {
 
     try {
       if (mode === "create") {
+        // Who's writing? Use their account for the byline and ownership.
+        const { data: { user } } = await supabase.auth.getUser();
         await createPost({
           slug: slugify(title),
           title,
@@ -70,7 +72,8 @@ export default function PostForm({ mode, initial }) {
           excerpt,
           content,
           cover, // the uploaded image, or the default gradient
-          author: "Raakesh",
+          author: user?.user_metadata?.name || user?.email || "Anonymous",
+          user_id: user?.id, // the database also defaults this to auth.uid()
           date: new Date().toISOString().slice(0, 10), // today, as YYYY-MM-DD
         });
       } else {

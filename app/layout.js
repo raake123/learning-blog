@@ -6,14 +6,26 @@
 // ---------------------------------------------------------------------------
 
 import Link from "next/link";
-import { Geist, Source_Serif_4 } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import ThemeToggle from "./components/ThemeToggle";
 
-// Two fonts, like a real magazine:
-//  - a clean sans-serif for the interface (nav, dates, buttons)
-//  - an elegant serif for headlines and article text
-const sans = Geist({ subsets: ["latin"], variable: "--font-sans" });
-const serif = Source_Serif_4({ subsets: ["latin"], variable: "--font-serif" });
+// Two fonts — cool and highly readable:
+//  - Inter         → the reading font: nav, body, tags, buttons (superb on screens)
+//  - Space Grotesk → a distinctive geometric display face for headlines
+// next/font exposes each family as its own CSS variable (the "-src" names).
+// globals.css then aliases --font-sans / --font-display to these, with a
+// plain fallback — done this way to avoid a self-referential var() cycle.
+const sans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans-src",
+  display: "swap",
+});
+const display = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display-src",
+  display: "swap",
+});
 
 // This controls the text in the browser tab and helps search engines.
 export const metadata = {
@@ -21,19 +33,32 @@ export const metadata = {
   description: "A blog built while learning full-stack web development.",
 };
 
+// Runs before the page paints so the saved theme is applied with no flash.
+// Defaults to dark mode when the visitor hasn't chosen one yet.
+const themeInit = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark')t='dark';document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='dark';}})();`;
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
+    <html
+      lang="en"
+      className={`${sans.variable} ${display.variable}`}
+      suppressHydrationWarning
+    >
       <body>
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+
         {/* Top navigation bar — shown on every page */}
         <nav className="site-nav">
           <div className="site-nav-inner">
             <Link href="/" className="site-name">
               The&nbsp;Learning&nbsp;Blog
             </Link>
-            <Link href="/admin" className="nav-write">
-              Write
-            </Link>
+            <div className="nav-right">
+              <ThemeToggle />
+              <Link href="/admin" className="nav-write">
+                Write
+              </Link>
+            </div>
           </div>
         </nav>
 

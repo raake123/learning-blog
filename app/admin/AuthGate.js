@@ -10,7 +10,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import LoginForm from "./LoginForm";
+import AuthForm from "./AuthForm";
 
 export default function AuthGate({ children }) {
   const [session, setSession] = useState(null);
@@ -38,7 +38,7 @@ export default function AuthGate({ children }) {
     );
   }
 
-  // Not logged in → show the login form. Logged in → show the protected content.
-  if (!session) return <LoginForm />;
+  // Not logged in → show the auth screen. Logged in → show the protected content.
+  if (!session) return <AuthForm />;
   return children;
 }
