@@ -18,9 +18,10 @@
   --text: #17181b;
   --text-soft: #565b63;
   --text-mute: #868c96;
-  --accent: #0f7a4d;
-  --accent-strong: #0b6640;
-  --tag-bg: #eaf4ee;
+  --accent: #09cb7c;
+  --accent-strong: #07b06c;
+  --on-accent: #05231a; /* dark text that sits on the bright-green fills */
+  --tag-bg: #e6f8ef;
   --border: #eceef0;
   --hairline: #e6e8eb;
   --thumb-bg: #eef0f2;
@@ -41,8 +42,8 @@
   --text: #eceef1;
   --text-soft: #a3abb6;
   --text-mute: #6b7280;
-  --accent: #4ad991;
-  --accent-strong: #6fe6a8;
+  --accent: #14db8a;
+  --accent-strong: #3ee6a3;
   --tag-bg: #10251b;
   --border: #21262d;
   --hairline: #20252c;
@@ -216,7 +217,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--on-accent);
   font-family: var(--font-sans);
   font-weight: 600;
   font-size: 14px;
@@ -277,11 +278,11 @@ a {
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.01em;
-  color: #fff;
+  color: var(--on-accent);
   background: var(--accent);
   border: 1px solid var(--accent);
   padding: 8px 18px;
-  border-radius: 999px;
+  border-radius: 10px;
   text-decoration: none;
   transition: background 0.15s ease, transform 0.15s ease;
 }
@@ -505,7 +506,7 @@ a {
     var(--accent),
     var(--accent-strong)
   );
-  color: #fff;
+  color: var(--on-accent);
   font-family: var(--font-sans);
   font-weight: 600;
 }
@@ -569,7 +570,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--on-accent);
   font-family: var(--font-sans);
   font-weight: 600;
   font-size: 34px;
@@ -850,10 +851,10 @@ a {
   font-family: var(--font-sans);
   font-size: 15px;
   font-weight: 600;
-  color: #fff;
+  color: var(--on-accent);
   background: var(--accent);
   border: none;
-  border-radius: 999px;
+  border-radius: 10px;
   padding: 11px 22px;
   cursor: pointer;
   text-decoration: none;
@@ -875,7 +876,7 @@ a {
   color: var(--text-soft);
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 10px;
   padding: 11px 20px;
   cursor: pointer;
   transition: border-color 0.15s ease, color 0.15s ease;
@@ -1059,7 +1060,7 @@ a {
   -webkit-backdrop-filter: saturate(180%) blur(8px);
   border: 1px solid var(--border);
   color: var(--text);
-  border-radius: 999px;
+  border-radius: 9px;
   padding: 6px 13px;
 }
 .ep-cover-tools button:hover {
