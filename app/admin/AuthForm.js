@@ -12,7 +12,7 @@
 // ---------------------------------------------------------------------------
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import PasswordInput from "../components/PasswordInput";
 
@@ -24,6 +24,14 @@ export default function AuthForm() {
   const [error, setError] = useState(null);
   const [notice, setNotice] = useState(null);
   const [busy, setBusy] = useState(false);
+
+  // Arriving from the nav's "Sign up for free" opens the create-account form.
+  useEffect(() => {
+    try {
+      if (new URLSearchParams(window.location.search).get("join") === "1")
+        setMode("signup");
+    } catch {}
+  }, []);
 
   function resetMessages() {
     setError(null);

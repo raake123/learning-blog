@@ -127,6 +127,9 @@ a {
   justify-content: space-between;
 }
 .site-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--font-display);
   font-optical-sizing: auto;
   font-weight: 600;
@@ -134,6 +137,125 @@ a {
   letter-spacing: -0.02em;
   color: var(--text);
   text-decoration: none;
+}
+.brand-logo {
+  flex: none;
+  display: block;
+  border-radius: 8px;
+}
+@media (max-width: 460px) {
+  .site-name span {
+    display: none;
+  }
+}
+
+/* Nav: Write link (link, not button) + account avatar menu */
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text-soft);
+  text-decoration: none;
+  padding: 7px 8px;
+  border-radius: 8px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.nav-link:hover {
+  color: var(--accent);
+  background: var(--raise);
+}
+.nav-link svg {
+  width: 16px;
+  height: 16px;
+}
+.nav-account {
+  position: relative;
+}
+.avatar-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--raise);
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.avatar-btn:hover {
+  border-color: var(--text-mute);
+}
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.avatar-initial {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+}
+.account-menu {
+  position: absolute;
+  top: 44px;
+  right: 0;
+  z-index: 40;
+  min-width: 210px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.account-head {
+  padding: 8px 10px 8px;
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 4px;
+}
+.account-name {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  word-break: break-word;
+}
+.account-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--text);
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.account-item:hover {
+  background: var(--thumb-bg);
+}
+.account-item.danger {
+  color: var(--danger);
+  border-top: 1px solid var(--hairline);
+  margin-top: 4px;
 }
 .nav-write {
   font-family: var(--font-sans);
@@ -694,13 +816,23 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px 0;
+  padding: 16px 0;
   border-bottom: 1px solid var(--hairline);
+}
+.admin-thumb {
+  width: 68px;
+  height: 46px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--hairline);
+  background: var(--thumb-bg);
 }
 .admin-row-info {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  flex: 1;
 }
 .admin-row-title {
   font-weight: 600;
@@ -713,8 +845,44 @@ a {
 }
 .admin-row-actions {
   display: flex;
-  gap: 16px;
+  gap: 4px;
   flex: none;
+}
+.row-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-soft);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.row-action svg {
+  width: 15px;
+  height: 15px;
+}
+.row-action:hover {
+  color: var(--accent);
+  background: var(--thumb-bg);
+}
+.row-action.danger {
+  color: var(--danger);
+}
+.row-action.danger:hover {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+@media (max-width: 560px) {
+  .row-action span {
+    display: none;
+  }
 }
 .link-muted,
 .link-danger {

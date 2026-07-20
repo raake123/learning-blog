@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { getMyPosts, deletePost, formatDate } from "@/lib/posts";
+import { IconEye, IconPencil, IconTrash } from "../components/icons";
 
 export default function Dashboard() {
   const [posts, setPosts] = useState([]);
@@ -48,9 +49,6 @@ export default function Dashboard() {
           <Link href="/admin/new" className="btn-primary">
             ＋ New post
           </Link>
-          <button className="btn-ghost" onClick={() => supabase.auth.signOut()}>
-            Sign out
-          </button>
         </div>
       </div>
 
@@ -64,24 +62,30 @@ export default function Dashboard() {
         <ul className="admin-list">
           {posts.map((post) => (
             <li key={post.slug} className="admin-row">
+              {post.cover && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={post.cover} alt="" className="admin-thumb" />
+              )}
               <div className="admin-row-info">
                 <span className="admin-row-title">{post.title}</span>
                 <span className="admin-row-meta">
-                  {post.category} · {formatDate(post.date)}
+                  {post.category ? `${post.category} · ` : ""}
+                  {formatDate(post.date)}
                 </span>
               </div>
               <div className="admin-row-actions">
-                <Link href={`/posts/${post.slug}`} className="link-muted">
-                  View
+                <Link href={`/posts/${post.slug}`} className="row-action" title="View">
+                  <IconEye /> <span>View</span>
                 </Link>
-                <Link href={`/admin/edit/${post.slug}`} className="link-muted">
-                  Edit
+                <Link href={`/admin/edit/${post.slug}`} className="row-action" title="Edit">
+                  <IconPencil /> <span>Edit</span>
                 </Link>
                 <button
-                  className="link-danger"
+                  className="row-action danger"
                   onClick={() => handleDelete(post.slug, post.title)}
+                  title="Delete"
                 >
-                  Delete
+                  <IconTrash /> <span>Delete</span>
                 </button>
               </div>
             </li>
