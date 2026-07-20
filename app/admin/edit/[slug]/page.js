@@ -9,7 +9,6 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import AuthGate from "../../AuthGate";
 import PostForm from "../../PostForm";
 import { getPostBySlug } from "@/lib/posts";
@@ -28,20 +27,17 @@ export default function EditPostPage() {
 
   return (
     <AuthGate>
-      <div className="container admin">
-        <Link href="/admin" className="back-link">
-          ← Back to posts
-        </Link>
-        <h1 className="admin-title">Edit post</h1>
-
-        {loading ? (
+      {loading ? (
+        <div className="container admin">
           <p className="admin-sub">Loading…</p>
-        ) : post ? (
-          <PostForm mode="edit" initial={post} />
-        ) : (
+        </div>
+      ) : post ? (
+        <PostForm mode="edit" initial={post} />
+      ) : (
+        <div className="container admin">
           <p className="admin-sub">That post could not be found.</p>
-        )}
-      </div>
+        </div>
+      )}
     </AuthGate>
   );
 }

@@ -5,10 +5,9 @@
 // The {children} slot is where each individual page gets dropped in.
 // ---------------------------------------------------------------------------
 
-import Link from "next/link";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import ThemeToggle from "./components/ThemeToggle";
+import Nav from "./components/Nav";
 
 // Two fonts — cool and highly readable:
 //  - Inter         → the reading font: nav, body, tags, buttons (superb on screens)
@@ -48,19 +47,7 @@ export default function RootLayout({ children }) {
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
 
         {/* Top navigation bar — shown on every page */}
-        <nav className="site-nav">
-          <div className="site-nav-inner">
-            <Link href="/" className="site-name">
-              The&nbsp;Learning&nbsp;Blog
-            </Link>
-            <div className="nav-right">
-              <ThemeToggle />
-              <Link href="/admin" className="nav-write">
-                Write
-              </Link>
-            </div>
-          </div>
-        </nav>
+        <Nav />
 
         {/* Each page's own content appears here */}
         <main>{children}</main>
