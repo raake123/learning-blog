@@ -547,6 +547,14 @@ a {
 .auth-link:hover {
   text-decoration: underline;
 }
+.auth-forgot {
+  align-self: flex-start;
+  margin-top: -6px;
+  color: var(--text-soft);
+}
+.auth-forgot:hover {
+  color: var(--accent);
+}
 .auth-notice {
   font-size: 14px;
   color: var(--accent);

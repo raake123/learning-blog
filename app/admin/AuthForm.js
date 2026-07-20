@@ -1,14 +1,14 @@
 // ---------------------------------------------------------------------------
-// app/admin/AuthForm.js  →  sign in, create an account, verify by email link
+// app/admin/AuthForm.js  →  sign in, create an account, reset a password
 //
-// Three little screens in one component:
-//   • "signin" → returning users: email + password
+// Screens (one component):
+//   • "signin" → returning users: email + password  (+ "Forgot password?")
 //   • "signup" → new users: name + email + password
 //   • "sent"   → "check your email and click the confirmation link"
+//   • "forgot" → enter email to receive a password-reset link
 //
-// New accounts must confirm their email (Supabase emails a confirmation link).
-// After clicking it, they come back here and sign in. On success, AuthGate
-// notices the session and shows the dashboard.
+// Both new-account confirmation and password reset use an emailed LINK.
+// On sign-in success, AuthGate notices the session and shows the dashboard.
 // ---------------------------------------------------------------------------
 "use client";
 
@@ -16,7 +16,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 export default function AuthForm() {
-  const [mode, setMode] = useState("signin"); // "signin" | "signup" | "sent"
+  const [mode, setMode] = useState("signin"); // signin | signup | sent | forgot
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,6 +29,11 @@ export default function AuthForm() {
     setNotice(null);
   }
 
+  function go(nextMode) {
+    setMode(nextMode);
+    resetMessages();
+  }
+
   // --- Returning user: email + password ---
   async function handleSignIn(event) {
     event.preventDefault();
@@ -36,7 +41,6 @@ export default function AuthForm() {
     resetMessages();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      // Friendlier message for the most common case.
       setError(
         error.message === "Email not confirmed"
           ? "Please confirm your email first — check your inbox for the link."
@@ -56,7 +60,7 @@ export default function AuthForm() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { name } }, // saved as the author's display name
+      options: { data: { name } },
     });
 
     if (error) {
@@ -64,14 +68,10 @@ export default function AuthForm() {
       setBusy(false);
       return;
     }
-
-    // If the project doesn't require confirmation, we're already logged in.
     if (data.session) {
       setBusy(false);
-      return; // AuthGate takes over
+      return; // confirmation not required → already signed in
     }
-
-    // Otherwise a confirmation link was emailed — show the "check email" screen.
     setMode("sent");
     setBusy(false);
   }
@@ -83,7 +83,23 @@ export default function AuthForm() {
     else setNotice("Sent again — check your inbox.");
   }
 
-  // --------------------------- "Check your email" ---------------------------
+  // --- Forgot password: email a reset link back to /admin/reset ---
+  async function handleForgot(event) {
+    event.preventDefault();
+    setBusy(true);
+    resetMessages();
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/admin/reset`,
+    });
+    setBusy(false);
+    if (error) setError(error.message);
+    else
+      setNotice(
+        "If an account exists for that email, a reset link is on its way."
+      );
+  }
+
+  // ----------------------------- "Check email" -----------------------------
   if (mode === "sent") {
     return (
       <div className="container admin-narrow">
@@ -92,24 +108,50 @@ export default function AuthForm() {
           We sent a confirmation link to <strong>{email}</strong>. Click it to
           verify your account, then come back here and sign in.
         </p>
-
         {notice && <p className="auth-notice">{notice}</p>}
         {error && <p className="form-error">{error}</p>}
-
         <div className="form-actions">
-          <button
-            className="btn-primary"
-            onClick={() => {
-              setMode("signin");
-              resetMessages();
-            }}
-          >
+          <button className="btn-primary" onClick={() => go("signin")}>
             Back to sign in
           </button>
           <button type="button" className="btn-ghost" onClick={resendLink}>
             Resend link
           </button>
         </div>
+      </div>
+    );
+  }
+
+  // --------------------------- Forgot password ---------------------------
+  if (mode === "forgot") {
+    return (
+      <div className="container admin-narrow">
+        <h1 className="admin-title">Reset your password</h1>
+        <p className="admin-sub">
+          Enter your email and we&apos;ll send you a link to set a new password.
+        </p>
+        <form onSubmit={handleForgot} className="admin-form">
+          <label>
+            Email
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </label>
+          {notice && <p className="auth-notice">{notice}</p>}
+          {error && <p className="form-error">{error}</p>}
+          <button className="btn-primary" disabled={busy}>
+            {busy ? "Sending…" : "Send reset link"}
+          </button>
+        </form>
+        <p className="auth-switch">
+          Remembered it?{" "}
+          <button type="button" className="auth-link" onClick={() => go("signin")}>
+            Back to sign in
+          </button>
+        </p>
       </div>
     );
   }
@@ -158,6 +200,17 @@ export default function AuthForm() {
           />
         </label>
 
+        {/* Forgot-password link only makes sense when signing in. */}
+        {!signingUp && (
+          <button
+            type="button"
+            className="auth-link auth-forgot"
+            onClick={() => go("forgot")}
+          >
+            Forgot password?
+          </button>
+        )}
+
         {notice && <p className="auth-notice">{notice}</p>}
         {error && <p className="form-error">{error}</p>}
 
@@ -177,10 +230,7 @@ export default function AuthForm() {
         <button
           type="button"
           className="auth-link"
-          onClick={() => {
-            setMode(signingUp ? "signin" : "signup");
-            resetMessages();
-          }}
+          onClick={() => go(signingUp ? "signin" : "signup")}
         >
           {signingUp ? "Sign in" : "Create an account"}
         </button>
