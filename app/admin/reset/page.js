@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import PasswordInput from "../../components/PasswordInput";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -93,17 +94,14 @@ export default function ResetPasswordPage() {
       <h1 className="admin-title">Set a new password</h1>
       <p className="admin-sub">Choose a new password for your account.</p>
       <form onSubmit={handleSubmit} className="admin-form">
-        <label>
-          New password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            minLength={6}
-            required
-            autoFocus
-          />
-        </label>
+        <PasswordInput
+          label="New password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          minLength={6}
+          required
+          autoFocus
+        />
         {error && <p className="form-error">{error}</p>}
         <button className="btn-primary" disabled={busy}>
           {busy ? "Saving…" : "Update password"}

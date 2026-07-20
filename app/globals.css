@@ -563,6 +563,38 @@ a {
   border-radius: 8px;
 }
 
+/* Password field with a show/hide eye button */
+.pw-wrap {
+  position: relative;
+  width: 100%;
+  display: block;
+}
+.pw-wrap input {
+  padding-right: 46px;
+}
+.pw-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-mute);
+  transition: color 0.15s ease;
+}
+.pw-toggle:hover {
+  color: var(--text);
+}
+.pw-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
 /* Forms */
 .admin-form {
   display: flex;

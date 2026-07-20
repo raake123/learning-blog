@@ -14,6 +14,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import PasswordInput from "../components/PasswordInput";
 
 export default function AuthForm() {
   const [mode, setMode] = useState("signin"); // signin | signup | sent | forgot
@@ -189,16 +190,13 @@ export default function AuthForm() {
             required
           />
         </label>
-        <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            minLength={6}
-            required
-          />
-        </label>
+        <PasswordInput
+          label="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          minLength={6}
+          required
+        />
 
         {/* Forgot-password link only makes sense when signing in. */}
         {!signingUp && (
