@@ -12,6 +12,51 @@ import { notFound } from "next/navigation";
 import { getPostBySlug } from "@/lib/posts";
 import Byline from "../../components/Byline";
 
+// Turn one saved section (block) into its article HTML.
+function renderBlock(b, i) {
+  switch (b.type) {
+    case "heading":
+      return <h2 className="post-h2" key={i}>{b.text}</h2>;
+    case "subheading":
+      return <h3 className="post-h3" key={i}>{b.text}</h3>;
+    case "paragraph":
+      return b.text
+        .split("\n\n")
+        .filter(Boolean)
+        .map((t, j) => <p key={`${i}-${j}`}>{t}</p>);
+    case "quote":
+      return <blockquote className="post-quote" key={i}>{b.text}</blockquote>;
+    case "list":
+      return (
+        <ul className="post-ul" key={i}>
+          {b.text
+            .split("\n")
+            .filter((l) => l.trim())
+            .map((li, j) => (
+              <li key={j}>{li.replace(/^[-*•]\s*/, "")}</li>
+            ))}
+        </ul>
+      );
+    case "code":
+      return (
+        <pre className="post-code" key={i}>
+          <code>{b.text}</code>
+        </pre>
+      );
+    case "image":
+      return b.url ? (
+        <figure className="post-figure" key={i}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={b.url} alt="" />
+        </figure>
+      ) : null;
+    case "divider":
+      return <hr className="post-hr" key={i} />;
+    default:
+      return null;
+  }
+}
+
 // Always fetch the latest version of the post from the database.
 export const dynamic = "force-dynamic";
 
@@ -57,11 +102,17 @@ export default async function PostPage({ params }) {
 
       {/* The body text, in comfortable serif paragraphs */}
       <div className="container">
-        <div className="article-body">
-          {post.content.split("\n\n").map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </div>
+        {post.blocks && post.blocks.length ? (
+          <div className="post-body">
+            {post.blocks.map((b, i) => renderBlock(b, i))}
+          </div>
+        ) : (
+          <div className="article-body">
+            {post.content.split("\n\n").map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+          </div>
+        )}
 
         <Link href="/" className="back-link">
           ← All posts

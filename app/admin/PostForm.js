@@ -14,6 +14,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { createPost, updatePost, slugify } from "@/lib/posts";
+import BlockEditor, { normalizeBlocks, blocksToPlainText } from "./BlockEditor";
 
 const DEFAULT_COVER = "/covers/default.svg";
 
@@ -24,7 +25,14 @@ export default function PostForm({ mode, initial }) {
   const [title, setTitle] = useState(initial?.title || "");
   const [category, setCategory] = useState(initial?.category || "");
   const [excerpt, setExcerpt] = useState(initial?.excerpt || "");
-  const [content, setContent] = useState(initial?.content || "");
+  // Content is now a list of sections (blocks). For older posts that only have
+  // plain `content`, turn each paragraph into a Text block so they stay editable.
+  const initialBlocks = initial?.blocks?.length
+    ? initial.blocks
+    : initial?.content
+    ? initial.content.split("\n\n").filter(Boolean).map((t) => ({ type: "paragraph", text: t }))
+    : null;
+  const [blocks, setBlocks] = useState(() => normalizeBlocks(initialBlocks));
   const [cover, setCover] = useState(initial?.cover || DEFAULT_COVER);
   const [uploading, setUploading] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -70,7 +78,8 @@ export default function PostForm({ mode, initial }) {
           title,
           category,
           excerpt,
-          content,
+          blocks, // the sections that make up the post
+          content: blocksToPlainText(blocks) || title, // plain-text fallback
           cover, // the uploaded image, or the default gradient
           author: user?.user_metadata?.name || user?.email || "Anonymous",
           user_id: user?.id, // the database also defaults this to auth.uid()
@@ -78,7 +87,14 @@ export default function PostForm({ mode, initial }) {
         });
       } else {
         // Editing keeps the same slug/date but can change everything else.
-        await updatePost(initial.slug, { title, category, excerpt, content, cover });
+        await updatePost(initial.slug, {
+          title,
+          category,
+          excerpt,
+          cover,
+          blocks,
+          content: blocksToPlainText(blocks) || title,
+        });
       }
       router.push("/admin");
       router.refresh();
@@ -141,16 +157,10 @@ export default function PostForm({ mode, initial }) {
           placeholder="A one-line summary shown on the homepage."
         />
       </label>
-      <label>
-        Content
-        <textarea
-          rows={12}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          required
-          placeholder="Write your post here. Leave a blank line between paragraphs."
-        />
-      </label>
+      <div className="field-block">
+        <span className="cover-label">Content</span>
+        <BlockEditor blocks={blocks} onChange={setBlocks} />
+      </div>
 
       {error && <p className="form-error">{error}</p>}
 
