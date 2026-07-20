@@ -95,11 +95,17 @@ export default function Nav() {
     <nav className="site-nav">
       <div className="site-nav-inner">
         <Link href="/" className="site-name">
-          <Logo size={26} />
+          <Logo size={34} />
           <span>The&nbsp;Learning&nbsp;Blog</span>
         </Link>
 
         <div className="nav-right">
+          {ready && !user && !inAdmin && (
+            <Link href="/admin" className="nav-link">
+              Log in
+            </Link>
+          )}
+
           {ready && !user && !inAdmin && (
             <Link href="/admin?join=1" className="nav-write">
               Sign up for free
