@@ -86,6 +86,8 @@ export default async function PostPage({ params }) {
           date={post.date}
           content={post.content}
           size="large"
+          authorAvatar={post.authorAvatar}
+          userId={post.user_id}
         />
       </div>
 

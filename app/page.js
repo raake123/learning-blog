@@ -60,6 +60,7 @@ export default async function HomePage() {
             author={featured.author}
             date={featured.date}
             content={featured.content}
+            authorAvatar={featured.authorAvatar}
           />
         </div>
       </Link>
@@ -81,6 +82,7 @@ export default async function HomePage() {
                 author={post.author}
                 date={post.date}
                 content={post.content}
+                authorAvatar={post.authorAvatar}
               />
             </div>
             <div className="story-thumb">

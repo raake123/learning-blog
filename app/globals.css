@@ -504,6 +504,17 @@ a {
   height: 44px;
   font-size: 18px;
 }
+.avatar-photo {
+  object-fit: cover;
+  background: var(--thumb-bg);
+}
+.byline-link {
+  text-decoration: none;
+  color: inherit;
+}
+.byline-link:hover .byline-author {
+  color: var(--accent);
+}
 .byline-text {
   display: flex;
   flex-direction: column;
@@ -518,6 +529,59 @@ a {
 .byline-meta {
   font-family: var(--font-sans);
   font-size: 13.5px;
+  color: var(--text-mute);
+}
+
+/* ---- Author profile page ---- */
+.author-head {
+  text-align: center;
+  padding: 40px 0 20px;
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.author-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--hairline);
+  margin-bottom: 18px;
+}
+.author-avatar-initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 34px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  border: none;
+}
+.author-name {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  margin: 0 0 8px;
+}
+.author-bio {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  color: var(--text-soft);
+  max-width: 46ch;
+  margin: 0 0 12px;
+}
+.author-count {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--text-mute);
 }
 

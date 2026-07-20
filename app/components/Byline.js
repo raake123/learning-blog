@@ -1,28 +1,43 @@
 // ---------------------------------------------------------------------------
-// app/components/Byline.js  →  a small reusable piece of UI
+// app/components/Byline.js  →  avatar + author + date + read time
 //
-// A "component" is just a function that returns some HTML you can reuse.
-// This one shows: [avatar]  Author Name · Jul 19, 2026 · 2 min read
-// We use it on both the homepage and the article page — write once, use twice.
+// Shows the author's profile photo when we have one (falling back to their
+// initial), and links to the author's profile page when a userId is given.
 // ---------------------------------------------------------------------------
 
+import Link from "next/link";
 import { formatDate, readingTime } from "@/lib/posts";
 
-export default function Byline({ author, date, content, size = "small" }) {
-  // The avatar is just the author's first initial in a colored circle.
+export default function Byline({ author, date, content, size = "small", authorAvatar, userId }) {
   const initial = author.charAt(0).toUpperCase();
 
-  return (
-    <div className={`byline byline-${size}`}>
-      <span className="avatar" aria-hidden="true">
-        {initial}
-      </span>
+  const avatar = authorAvatar ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={authorAvatar} alt="" className="avatar avatar-photo" />
+  ) : (
+    <span className="avatar" aria-hidden="true">{initial}</span>
+  );
+
+  const inner = (
+    <>
+      {avatar}
       <span className="byline-text">
         <span className="byline-author">{author}</span>
         <span className="byline-meta">
           {formatDate(date)} · {readingTime(content)}
         </span>
       </span>
-    </div>
+    </>
   );
+
+  const className = `byline byline-${size}`;
+
+  if (userId) {
+    return (
+      <Link href={`/author/${userId}`} className={`${className} byline-link`}>
+        {inner}
+      </Link>
+    );
+  }
+  return <div className={className}>{inner}</div>;
 }

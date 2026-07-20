@@ -28,9 +28,21 @@ export default function Nav() {
   const menuRef = useRef(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user || null);
+    supabase.auth.getSession().then(async ({ data }) => {
+      const u = data.session?.user || null;
+      setUser(u);
       setReady(true);
+      // Mirror name/photo into the public profiles table so bylines and the
+      // author page can show them. (No-op if profiles isn't set up yet.)
+      if (u) {
+        try {
+          await supabase.from("profiles").upsert({
+            id: u.id,
+            name: u.user_metadata?.name || u.email,
+            avatar_url: u.user_metadata?.avatar_url || null,
+          });
+        } catch {}
+      }
     });
     const { data } = supabase.auth.onAuthStateChange((_e, s) =>
       setUser(s?.user || null)
@@ -59,9 +71,17 @@ export default function Nav() {
     const up = await supabase.storage.from("covers").upload(path, file);
     if (!up.error) {
       const { data } = supabase.storage.from("covers").getPublicUrl(path);
-      await supabase.auth.updateUser({ data: { avatar_url: data.publicUrl } });
-      const { data: u } = await supabase.auth.getUser();
-      setUser(u.user);
+      const avatar_url = data.publicUrl;
+      // updateUser returns the updated user, so the avatar refreshes immediately.
+      const { data: upd } = await supabase.auth.updateUser({ data: { avatar_url } });
+      if (upd?.user) setUser(upd.user);
+      try {
+        await supabase.from("profiles").upsert({
+          id: user.id,
+          name: name || user.email,
+          avatar_url,
+        });
+      } catch {}
     }
     setUploading(false);
   }
@@ -80,8 +100,6 @@ export default function Nav() {
         </Link>
 
         <div className="nav-right">
-          <ThemeToggle />
-
           {ready && !user && !inAdmin && (
             <Link href="/admin?join=1" className="nav-write">
               Sign up for free
@@ -93,6 +111,8 @@ export default function Nav() {
               <IconPencil /> Write
             </Link>
           )}
+
+          <ThemeToggle />
 
           {ready && user && (
             <div className="nav-account" ref={menuRef}>
