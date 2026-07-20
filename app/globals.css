@@ -740,174 +740,287 @@ a {
   text-decoration: underline;
 }
 
-/* ---- Block editor (the "add a section" post editor) ---- */
+/* ---- Block editor: a Notion-style writing canvas ---- */
 .field-block {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
-.blocks {
+.editor {
   display: flex;
   flex-direction: column;
-  gap: 14px;
 }
-.block {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--surface);
-  overflow: hidden;
+.ed-block {
+  position: relative;
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  align-items: start;
+  border-radius: 6px;
+  margin: 1px 0;
 }
-.block-head {
+.ed-block.drop-before {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+.ed-gutter {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 10px 8px 14px;
-  border-bottom: 1px solid var(--hairline);
-  background: var(--raise);
+  justify-content: flex-end;
+  gap: 1px;
+  padding: 3px 6px 0 0;
+  opacity: 0;
+  transition: opacity 0.12s ease;
 }
-.block-type {
-  font-family: var(--font-sans);
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--text-mute);
+.ed-block:hover .ed-gutter {
+  opacity: 1;
 }
-.block-tools {
-  display: flex;
-  gap: 4px;
-}
-.block-tools button {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  border: 1px solid transparent;
+.ed-tool {
+  width: 24px;
+  height: 24px;
+  border: none;
   background: none;
   color: var(--text-mute);
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s ease, color 0.15s ease;
+  font-size: 16px;
+  line-height: 1;
 }
-.block-tools button:hover:not(:disabled) {
+.ed-tool:hover {
   background: var(--thumb-bg);
   color: var(--text);
 }
-.block-tools button:disabled {
-  opacity: 0.35;
-  cursor: default;
+.ed-drag {
+  cursor: grab;
 }
-.block-del:hover:not(:disabled) {
-  color: var(--danger);
+.ed-drag:active {
+  cursor: grabbing;
 }
-.block-body {
-  padding: 12px 14px;
-}
-.blk-input {
-  font-family: var(--font-sans);
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--text);
-  background: var(--bg);
+.ed-menu {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  z-index: 30;
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 9px;
-  padding: 10px 12px;
+  border-radius: 12px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.16);
+  padding: 6px;
+  min-width: 194px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ed-menu button {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 10px;
+  border: none;
+  background: none;
+  color: var(--text);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  text-align: left;
+}
+.ed-menu button:hover {
+  background: var(--thumb-bg);
+}
+.ed-menu .mk {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11.5px;
+  color: var(--text-mute);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  font-family: ui-monospace, Menlo, monospace;
+}
+.ed-content {
+  min-width: 0;
+  padding: 1px 0;
+}
+.ed-remove {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  color: var(--text-mute);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.ed-block:hover .ed-remove {
+  opacity: 0.5;
+}
+.ed-remove:hover {
+  opacity: 1;
+  color: var(--danger);
+  background: var(--thumb-bg);
+}
+
+/* Borderless inline inputs — they look like the finished article.
+   Scoped under .editor so they beat the global .admin-form textarea rule. */
+.editor .ed-input {
   width: 100%;
-  resize: vertical;
-}
-.blk-input:focus {
+  border: none;
+  background: transparent;
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  resize: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--text);
+  font-family: var(--font-sans);
+  overflow: hidden;
+  display: block;
 }
-.blk-heading {
+.editor .ed-input:focus {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+.editor .ed-input::placeholder {
+  color: var(--text-mute);
+  opacity: 0.55;
+}
+.editor .ed-paragraph {
+  font-size: 19px;
+  line-height: 1.75;
+  letter-spacing: -0.006em;
+  padding: 3px 0;
+}
+.editor .ed-heading {
+  font-family: var(--font-display);
+  font-size: 29px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  padding: 14px 0 2px;
+}
+.editor .ed-subheading {
   font-family: var(--font-display);
   font-size: 22px;
   font-weight: 600;
   letter-spacing: -0.01em;
+  line-height: 1.25;
+  padding: 10px 0 2px;
 }
-.blk-subheading {
+.editor .ed-quote {
   font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 600;
-}
-.blk-quote {
+  font-size: 21px;
   font-style: italic;
+  line-height: 1.5;
+  border-left: 3px solid var(--accent);
+  padding: 2px 0 2px 16px;
 }
-.blk-code {
+.editor .ed-code {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.6;
+  background: var(--raise);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  padding: 12px 14px;
 }
-.blk-image {
+.ed-list {
+  list-style: none;
+  margin: 2px 0;
+  padding: 0;
+}
+.ed-li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.ed-dot {
+  color: var(--text-mute);
+  font-size: 19px;
+  line-height: 1.75;
+  user-select: none;
+}
+.editor .ed-listitem {
+  font-size: 19px;
+  line-height: 1.75;
+}
+.ed-image {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   align-items: flex-start;
+  padding: 6px 0;
 }
-.blk-image-preview {
-  width: 360px;
+.ed-image-preview {
   max-width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid var(--border);
+  border-radius: 12px;
+  border: 1px solid var(--hairline);
 }
-.blk-image-empty {
-  width: 360px;
-  max-width: 100%;
+.ed-image-drop {
+  width: 100%;
+  max-width: 520px;
   aspect-ratio: 16 / 9;
   border: 1px dashed var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-mute);
   font-size: 14px;
-}
-.blk-divider-preview {
-  color: var(--text-mute);
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 13px;
-  text-align: center;
-  padding: 4px;
-}
-.block-add {
-  border: 1px dashed var(--border);
-  border-radius: 12px;
-  padding: 14px;
-}
-.block-add-label {
-  display: block;
-  font-family: var(--font-sans);
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--text-mute);
-  margin-bottom: 10px;
-}
-.block-add-btns {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.block-add-btn {
-  font-family: var(--font-sans);
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--text);
-  background: var(--raise);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 7px 14px;
   cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  background: var(--raise);
 }
-.block-add-btn:hover {
+.ed-image-drop:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+.ed-replace {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+.ed-replace:hover {
+  color: var(--accent);
+}
+.ed-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 14px 0;
+}
+.ed-foot {
+  position: relative;
+  padding: 8px 0 0 46px;
+}
+.ed-add {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-mute);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 0;
+}
+.ed-add:hover {
+  color: var(--accent);
+}
+.ed-foot .ed-menu {
+  left: 46px;
+  top: 40px;
 }
 
 /* ---- Rendered blocks on the article page ---- */
