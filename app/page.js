@@ -22,7 +22,7 @@ export default async function HomePage() {
     return (
       <div className="container">
         <header className="masthead">
-          <h1>The Learning Blog</h1>
+          <h1>Leafnote</h1>
           <p>No posts yet — check back soon.</p>
         </header>
       </div>
@@ -37,7 +37,7 @@ export default async function HomePage() {
       {/* Masthead */}
       <header className="masthead">
         <span className="masthead-kicker">Essays · Notes · Tutorials</span>
-        <h1>The Learning Blog</h1>
+        <h1>Leafnote</h1>
         <p>Notes from someone figuring out how to build things on the web.</p>
       </header>
 

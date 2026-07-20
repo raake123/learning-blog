@@ -28,8 +28,8 @@ const display = Space_Grotesk({
 
 // This controls the text in the browser tab and helps search engines.
 export const metadata = {
-  title: "The Learning Blog",
-  description: "A blog built while learning full-stack web development.",
+  title: "Leafnote",
+  description: "Leafnote — a place to write and share what you're learning.",
 };
 
 // Runs before the page paints so the saved theme is applied with no flash.

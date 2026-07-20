@@ -96,7 +96,7 @@ export default function Nav() {
       <div className="site-nav-inner">
         <Link href="/" className="site-name">
           <Logo size={34} />
-          <span>The&nbsp;Learning&nbsp;Blog</span>
+          <span>Leafnote</span>
         </Link>
 
         <div className="nav-right">
